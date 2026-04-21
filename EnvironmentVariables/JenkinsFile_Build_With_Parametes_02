@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Select environment')
+    }
+
+    environment {
+        APP_NAME = "my-service"
+    }
+
+    stages {
+        stage('Info') {
+            steps {
+                sh 'echo "App: $APP_NAME"'
+                sh 'echo "Environment: $ENV"'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'echo "Deploying to $ENV environment"'
+            }
+        }
+    }
+}

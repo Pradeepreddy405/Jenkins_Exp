@@ -1,1 +1,17 @@
+pipeline {
+    agent any
 
+    environment {
+        APP_ENV = "development"
+        APP_NAME = "UserLoginApplication"
+    }
+
+    stages {
+        stage('Print Env') {
+            steps {
+                sh 'echo "App Name: $APP_NAME"'
+                sh 'echo "Environment: $APP_ENV"'
+            }
+        }
+    }
+}

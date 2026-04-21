@@ -1,0 +1,20 @@
+pipeline {
+    agent none
+
+    stages {
+
+        stage('Frontend') {
+            agent { docker { image 'node:18' } }
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Backend') {
+            agent { docker { image 'maven:3.9.9-eclipse-temurin-17' } }
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+    }
+}

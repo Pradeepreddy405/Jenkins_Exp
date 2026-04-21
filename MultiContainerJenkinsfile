@@ -1,0 +1,78 @@
+// ==========================================================
+// TITLE: Multi-Container Jenkins Pipeline (Node + Maven + Python)
+// PURPOSE: Run different tools in isolated Docker containers per stage
+// ==========================================================
+
+pipeline {
+
+    // No global agent → forces each stage to define its own environment
+    // This is REQUIRED for multi-container pipelines
+    agent none
+
+    stages {
+
+        // ======================================================
+        // STAGE 1: NODE (JavaScript / Frontend environment)
+        // ======================================================
+        stage('Node Stage') {
+
+            // Define Docker container for THIS stage only
+            // Jenkins will:
+            // 1. Pull image if not available
+            // 2. Start container
+            // 3. Run steps inside it
+            // 4. Destroy container after stage
+            agent {
+                docker {
+                    image 'node:18'
+                }
+            }
+
+            steps {
+                // Runs inside node:18 container
+                // Verifies Node.js is available
+                sh 'node -v'
+            }
+        }
+
+        // ======================================================
+        // STAGE 2: MAVEN (Java / Backend environment)
+        // ======================================================
+        stage('Maven Stage') {
+
+            // New container → completely different environment
+            // Node is NOT available here
+            agent {
+                docker {
+                    image 'maven:3.9.9-eclipse-temurin-17'
+                }
+            }
+
+            steps {
+                // Runs inside Maven container
+                // Prints Maven + Java version
+                sh 'mvn -v'
+            }
+        }
+
+        // ======================================================
+        // STAGE 3: PYTHON (Scripting / Automation environment)
+        // ======================================================
+        stage('Python Stage') {
+
+            // Again, new isolated container
+            // No relation to previous stages except shared workspace
+            agent {
+                docker {
+                    image 'python:3.12'
+                }
+            }
+
+            steps {
+                // Runs inside Python container
+                // Verifies Python version
+                sh 'python --version'
+            }
+        }
+    }
+}

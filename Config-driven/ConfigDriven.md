@@ -1,10 +1,10 @@
 ## my-app/
-  │
-  ├── Jenkinsfile
-  ├── config/
-  │   ├── dev.yaml
-  │   ├── staging.yaml
-  │   └── prod.yaml
+│
+├── Jenkinsfile
+├── config/
+│   ├── dev.yaml
+│   ├── staging.yaml
+│   └── prod.yaml
 
 
 ## config/dev.yaml

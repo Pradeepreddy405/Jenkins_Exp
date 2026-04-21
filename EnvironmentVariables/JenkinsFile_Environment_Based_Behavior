@@ -1,0 +1,78 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Select environment')
+    }
+
+    environment {
+        APP_NAME = "my-service"
+    }
+
+    stages {
+
+        stage('Info') {
+            steps {
+                sh 'echo "App: $APP_NAME"'
+                sh 'echo "Environment: $ENV"'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'echo "Building $APP_NAME for $ENV"'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+
+                    if (ENV == "dev") {
+                        sh '''
+                        echo "Deploying to DEV server"
+                        echo "Using dev configs"
+                        '''
+
+                    } else if (ENV == "staging") {
+                        sh '''
+                        echo "Deploying to STAGING server"
+                        echo "Running extra validation checks"
+                        '''
+
+                    } else if (ENV == "prod") {
+                        sh '''
+                        echo "Deploying to PROD server"
+                        echo "Strict deployment rules applied"
+                        '''
+
+                    } else {
+                        error "Invalid ENV selected"
+                    }
+
+                }
+            }
+        }
+
+        stage('Post-Deploy Check') {
+            steps {
+                script {
+                    if (ENV == "prod") {
+                        sh 'echo "Running smoke tests for PROD"'
+                    } else {
+                        sh 'echo "Skipping heavy tests for non-prod"'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully for ${ENV}"
+        }
+        failure {
+            echo "Pipeline failed for ${ENV}"
+        }
+    }
+}

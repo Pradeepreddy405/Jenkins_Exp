@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Select environment')
+    }
+
+    stages {
+
+        stage('Load Config') {
+            steps {
+                script {
+                    config = readYaml file: "config/${params.ENV}.yaml"
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh "echo Building ${config.app_name}"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh "${config.deploy_cmd}"
+            }
+        }
+    }
+}
